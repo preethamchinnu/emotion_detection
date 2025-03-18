@@ -1,0 +1,6 @@
+opencv-python-headless
+numpy
+mediapipe
+fer
+wget
+tensorflow-cpu
