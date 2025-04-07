@@ -6,7 +6,7 @@ metadata:
   labels:
     app: emotion-detection
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: emotion-detection
@@ -16,9 +16,9 @@ spec:
         app: emotion-detection
     spec:
       nodeSelector:
-        node-role.kubernetes.io/edge: ""  
+        node-role.kubernetes.io/control-plane: ""
       containers:
-        - name: object-detection
+        - name: emotion-detetcion
           image: preethu25/emotiondetection:latest
           imagePullPolicy: IfNotPresent
           ports:
@@ -35,13 +35,6 @@ spec:
               port: 51820
             initialDelaySeconds: 20
             periodSeconds: 5
-          resources:
-            limits:
-              cpu: "100m"
-              memory: "1Gi"
-            requests:
-              cpu: "50m"
-              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service
