@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emotion-detection
+  namespace: default
+  labels:
+    app: emotion-detection
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: emotion-detection
+  template:
+    metadata:
+      labels:
+        app: emotion-detection
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/edge: ""  
+      containers:
+        - name: object-detection
+          image: preethu25/emotiondetection:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 51820
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 51820
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 51820
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "1Gi"
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emotion-detection
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: emotion-detection
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 51820
